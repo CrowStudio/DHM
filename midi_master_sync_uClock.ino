@@ -3,6 +3,9 @@
  * Master Clock for MIDI, USB MIDI, Pocket Operators, Volcas, and sync start for LiveTrak L12.
  * https://github.com/CrowStudio/DHM
  * 
+ *
+ * Inspired by the two following projects:
+ *
  * arduino-midi-sync 
  * MIDI master clock/sync/divider for MIDI instruments.
  * https://github.com/ejlabs/arduino-midi-sync 
