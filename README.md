@@ -11,7 +11,7 @@ CV Sync
 
 OLED display, 2 separate Push Buttons, 1 Rotary Encoder with Push Button
   Start/Stop Button
-  - Send Start/Stop to MIDI (DIN) and MIDI USB, and Start/Stop signal to LiveTrak L-12, or ZOOM R8/R24.
+  - Send Start/Stop to MIDI (DIN) and/or MIDI USB, and Start/Stop signal to Foot Switch jack for LiveTrak L-12, or ZOOM R8/R24.
   
  Rotary Enconder
   - Adjust BPM 10-300 with +/- 1 increments.
