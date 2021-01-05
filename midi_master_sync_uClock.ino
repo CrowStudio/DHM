@@ -175,12 +175,12 @@ void audioSyncPulse(uint32_t * tick) {
   }
 }
 
-// PPQN led indicator NEEDS MATH TO HANDLE PPQN DEVIATION WITH VARIABLE audio_syncPPQN
+// PPQN led indicator
 void ppqnLed(uint32_t * tick) {
-  if ( !(*tick % (96)) || (*tick == 1) ) {  // first compass step will flash longer
+  if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4)) || (*tick == 1) ) {  // first compass step will flash longer
     PPQN_blink_timer = 4;
     digitalWrite(LED1_OUTPUT, HIGH);
-  } else if ( !(*tick % (24)) ) {   // each quarter led on
+  } else if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter led on
     digitalWrite(LED1_OUTPUT, HIGH);
   } else if ( !(*tick % PPQN_blink_timer) ) { // get led off
     digitalWrite(LED1_OUTPUT, LOW);
@@ -188,12 +188,12 @@ void ppqnLed(uint32_t * tick) {
   }
 }
 
-// Audio sync PPQN pulse NEEDS MATH TO HANDLE PPQN DEVIATION WITH VARIABLE audio_syncPPQN
+// Audio sync PPQN pulse
 void audioSyncPpqnPulse(uint32_t * tick) {
-  if ( !(*tick % (96)) || (*tick == 1) ) {  // first compass step will flash longer
+  if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4)) || (*tick == 1) ) {  // first compass step will flash longer
     audio_PPQN_pulse_timer = 4;
     digitalWrite(AUDIO_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % (24)) ) {   // each quarter led on
+  } else if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter led on
     digitalWrite(AUDIO_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % audio_PPQN_pulse_timer) ) { // get led off
     digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
