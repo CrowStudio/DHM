@@ -19,9 +19,17 @@ Rotary Enconder
    - Adjust BPM 10-300 with +/- 10 increments.
 
 Rotary Encoder Push Button
- - Individual Tempo adjustment for second CV Sync jack.<br/>
+ - Individual Tempo Adjustment for second CV Sync jack.<br/>
    Push Alt Button
-   - Adjust latency compensation 0-1000 ms with +/- 10 increments.
+   - Adjust Latency Compensation 0-1000 ms with +/- 10 increments.
 
-
-
+## To do list
+- Verify individual Tempo Adjustment for second CV Sync jack.
+- Add speed-up for Rotary Encoder.
+  - Remove +/- 10 icrements (Alt Button), replace with +/- 1 per step at slow speed and icrease when truning faster.
+- Create Menu structure for Rotary Encoder Push Button.<br/>
+  Select option with Rotary Encoder, edit with Alt(Select) Button, change value with Rotary Encoder, and press Alt(Select) Button to save/exit
+  - Individual Tempo Adjustment for CV Sync second jack.
+  - Adjust Latency Compensation.
+  - MIDI through ON/OFF.
+  
