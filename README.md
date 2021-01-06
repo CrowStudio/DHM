@@ -3,8 +3,10 @@ Master Clock for MIDI, USB MIDI, CV Sync, and Sync Start for ZOOM LiveTrak L-12,
 
 Features:<br/>
 MIDI 
- - 1x MIDI (DIN) in/through, or USB MIDI in/through.
- - 4x MIDI (DIN) out, and 1x USB MIDI out.
+ - 1x MIDI (DIN) in/through.
+ - 1x USB MIDI in/through.
+ - 4x MIDI (DIN) out.
+ - 1x USB MIDI out.
 
 CV
  - 2x CV Sync (3.5 mm mini jack) out.
