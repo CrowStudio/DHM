@@ -335,49 +335,7 @@ void offset_display() {
   // display_update = false;
 }
 
-void all_off() { // make sure all sync, led pin stat to low
-  digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
-  digitalWrite(AUDIO_SYNC_PPQN_OUTPUT, LOW);
-  digitalWrite(LED1_OUTPUT, LOW);
-}
-
-
-void loop(void) {
-  byte i = 0;
-  byte p = 0;
-
-  bRotary.update();
-  bStart.update();
-  bAlt.update();
-
-  if (bRotary.fell()) {
-    p = 1;
-  } else if (bStart.fell()) {
-    playing = !playing;
-    if (playing) {
-      delay(compensation);
-      uClock.start();
-    } else {
-      uClock.stop();
-    }
-  } else if (bAlt.fell()) {
-    if (bpm_editing && !offSet) {
-      inc_dec = !inc_dec;
-    } else if (!bpm_editing) {
-      offSet = !offSet;
-    }
-  }
-
-  int newPosition = (myEnc.read()/4);
-  if (newPosition != oldPosition) {    
-    if (oldPosition < newPosition) {
-      i = 2;
-    } else if (oldPosition > newPosition) {
-      i = 1;
-    }
-    oldPosition = newPosition;
-  }
-  
+void editDisplay(byte i, byte p) {
   if (bpm_editing && inc_dec) {
     bpm_dec_display();
     if (i == 2 ) {
@@ -392,7 +350,7 @@ void loop(void) {
       if (bpm < MINIMUM_BPM) {
         bpm = MINIMUM_BPM;
       }
-      	uClock.setTempo(bpm);
+        uClock.setTempo(bpm);
         bpm_dec_display();
       }
     
@@ -455,6 +413,53 @@ void loop(void) {
       } else {
         sync_display();
       }
+   }
+}
+
+void all_off() { // make sure all sync, led pin stat to low
+  digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
+  digitalWrite(AUDIO_SYNC_PPQN_OUTPUT, LOW);
+  digitalWrite(LED1_OUTPUT, LOW);
+}
+
+
+void loop(void) {
+  byte i = 0;
+  byte p = 0;
+
+  bRotary.update();
+  bStart.update();
+  bAlt.update();
+
+  if (bRotary.fell()) {
+    p = 1;
+  } else if (bStart.fell()) {
+    playing = !playing;
+    if (playing) {
+      delay(compensation);
+      uClock.start();
+    } else {
+      uClock.stop();
+    }
+  } else if (bAlt.fell()) {
+    if (bpm_editing && !offSet) {
+      inc_dec = !inc_dec;
+    } else if (!bpm_editing) {
+      offSet = !offSet;
+    }
   }
+
+  int newPosition = (myEnc.read()/4);
+  if (newPosition != oldPosition) {    
+    if (oldPosition < newPosition) {
+      i = 2;
+    } else if (oldPosition > newPosition) {
+      i = 1;
+    }
+    oldPosition = newPosition;
+  }
+
+  editDisplay(i, p);
+  
   while (usbMIDI.read());
 }
