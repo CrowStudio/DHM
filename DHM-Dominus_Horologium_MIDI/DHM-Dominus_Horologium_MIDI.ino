@@ -186,7 +186,7 @@ void ppqnLed(uint32_t * tick) {
 
 // CV sync pulse PPQN
 void audioSyncPpqnPulse(uint32_t * tick) {
-  if ( !(*tick % (24 + (audio_syncPPQN))) ) {   // each quarter pulse AUDIO_SYNC_OUTPUT HIGH
+  if ( !(*tick % (24 + audio_syncPPQN)) ) {   // each quarter pulse AUDIO_SYNC_OUTPUT HIGH
     digitalWrite(AUDIO_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % audio_pulse_timer) ) { //  AUDIO_SYNC_OUTPUT LOW
     digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
