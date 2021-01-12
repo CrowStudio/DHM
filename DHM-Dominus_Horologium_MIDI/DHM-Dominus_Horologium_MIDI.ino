@@ -107,7 +107,7 @@ void setup(void) {
     compensation = 0;
   }
   
-  uClock.setDrift(11); // compensate latency - setDrift = 4 for USB Teensy, setDrift = 11 for MIDI
+  uClock.setDrift(11); // compensate latency - setDrift = 1 for USB Teensy, setDrift = 11 for MIDI
   uClock.init(); // Inits the clock
   uClock.setClock96PPQNOutput(ClockOut96PPQN); // Set the callback function for the clock output to send MIDI Sync message.
   uClock.setOnClockStartOutput(onClockStart);  // Set the callback function for MIDI Start and Stop messages.
@@ -336,6 +336,7 @@ void offset_display() {
 }
 
 void editDisplay(byte i, byte p) {
+  
   if (bpm_editing && inc_dec) {
     bpm_dec_display();
     if (i == 2 ) {
