@@ -42,8 +42,8 @@
 
 #define LED1_OUTPUT 13 // Tempo LED
 
-#define AUDIO_SYNC_OUTPUT 23 // Audio Sync Digital Pin
-#define AUDIO_SYNC_PPQN_OUTPUT 22 // 2nd Audio Sync Pin
+#define CV_SYNC_OUTPUT 23 // Audio Sync Digital Pin
+#define CV_SYNC_PPQN_OUTPUT 22 // 2nd Audio Sync Pin
 
 #define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
 #define BUTTON_START_INPUT 9 // Start/Stop Push Button
@@ -63,13 +63,12 @@
 int oldPosition;
 
 uint8_t bpm_blink_timer = 1,
-        PPQN_blink_timer = 1,
-        audio_pulse_timer = 1,
-        audio_PPQN_pulse_timer = 1;
+        //PPQN_blink_timer = 1,
+        cv_pulse_timer = 1,
 
 long intervalMicroSeconds,
      bpm,
-     audio_syncPPQN,
+     CVsyncPPQN,
      compensation;
 
 boolean display_update = false,
@@ -127,8 +126,8 @@ void setup(void) {
   pinMode(OLED_RESET_INPUT,INPUT);
   
   pinMode(LED1_OUTPUT,OUTPUT);
-  pinMode(AUDIO_SYNC_OUTPUT,OUTPUT);
-  pinMode(AUDIO_SYNC_PPQN_OUTPUT,OUTPUT);
+  pinMode(CV_SYNC_OUTPUT,OUTPUT);
+  pinMode(CV_SYNC_PPQN_OUTPUT,OUTPUT);
 
   
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -151,10 +150,10 @@ void setup(void) {
 
 // BPM led indicator
 void bpmLed(uint32_t * tick) {
-  if ( !(*tick % (96)) || (*tick == 1) ) {  // first quater pulse led will flash longer
+  if ( !(*tick % 96) || (*tick == 1) ) {  // first quater pulse led will flash longer
     bpm_blink_timer = 4;
     digitalWrite(LED1_OUTPUT, HIGH);
-  } else if ( !(*tick % (24)) ) {   // each quarter pulse led on 
+  } else if ( !(*tick % 24) ) {   // each quarter pulse led on 
     digitalWrite(LED1_OUTPUT, HIGH);
   } else if ( !(*tick % bpm_blink_timer) ) { // get led off
     digitalWrite(LED1_OUTPUT, LOW);
@@ -163,34 +162,33 @@ void bpmLed(uint32_t * tick) {
 }
 
 // CV sync pulse
-void audioSyncPulse(uint32_t * tick) {
-  if ( !(*tick % (24)) ) {   // each quarter pulse AUDIO_SYNC_OUTPUT HIGH
-    digitalWrite(AUDIO_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % audio_pulse_timer) ) { //  AUDIO_SYNC_OUTPUT LOW
-    digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
+void CVSyncPulse(uint32_t * tick) {
+  if ( !(*tick % 24) ) {   // each quarter pulse CV_SYNC_OUTPUT HIGH
+    digitalWrite(CV_SYNC_OUTPUT, HIGH);
+  } else if ( !(*tick % cv_pulse_timer) ) { //  CV_SYNC_OUTPUT LOW
+    digitalWrite(CV_SYNC_OUTPUT, LOW);
   }
 }
 
-// CV sync pulse PPQN led indicator
-void ppqnLed(uint32_t * tick) {
-  if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4))) || (*tick == 1) ) {  // first quater pulse led will flash longer
-    digitalWrite(LED1_OUTPUT, HIGH);
-    PPQN_blink_timer = 4;
-  } else if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter pulse led on
-    digitalWrite(LED1_OUTPUT, HIGH);
-  } else if ( !(*tick % PPQN_blink_timer) ) { // get led off
-    digitalWrite(LED1_OUTPUT, LOW);
-    PPQN_blink_timer = 1;
-  }
-}
+// // CV sync pulse PPQN led indicator
+// void ppqnLed(uint32_t * tick) {
+//   if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4))) || (*tick == 1) ) {  // first quater pulse led will flash longer
+//     digitalWrite(LED1_OUTPUT, HIGH);
+//     PPQN_blink_timer = 4;
+//   } else if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter pulse led on
+//     digitalWrite(LED1_OUTPUT, HIGH);
+//   } else if ( !(*tick % PPQN_blink_timer) ) { // get led off
+//     digitalWrite(LED1_OUTPUT, LOW);
+//     PPQN_blink_timer = 1;
+//   }
+// }
 
 // CV sync pulse PPQN
-void audioSyncPpqnPulse(uint32_t * tick) {
-  if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter pulse AUDIO_SYNC_OUTPUT HIGH
-    digitalWrite(AUDIO_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % audio_pulse_timer) ) { //  AUDIO_SYNC_OUTPUT LOW
-    digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
-    audio_pulse_timer = 1;
+void CVSyncPPQNPulse(uint32_t * tick) {
+  if ( !(*tick % CVsyncPPQN) ){   //  CV_SYNC_PPQN_OUTPUT HIGH
+    digitalWrite(CV_SYNC_PPQN_OUTPUT, HIGH);
+  } else if ( !(*tick % cv_pulse_timer) ) { //  CV_SYNC_PPQN_OUTPUT LOW
+    digitalWrite(CV_SYNC_OUTPUT, LOW);
   }
 }
 
@@ -235,7 +233,7 @@ unsigned int EEPROMReadInt(int p_address)
 }
 
 void bpm_display() { 
-  EEPROMWriteInt(0,bpm);  
+  //EEPROMWriteInt(0,bpm);  
   display.setTextSize(2);
   display.setCursor(0,8);  
   display.setTextColor(WHITE, BLACK);
@@ -254,28 +252,8 @@ void bpm_display() {
   display_update = false;
 }
 
-void bpm_dec_display() {
-  EEPROMWriteInt(0,bpm);  
-  display.setTextSize(2);
-  display.setCursor(0,8);  
-  display.setTextColor(WHITE, BLACK);
-  display.clearDisplay();
-  if (bpm >= 100) {
-  display.setCursor(0,8);
-  display.print(bpm);  
-  }
-  else if(bpm < 100) {
-  display.setCursor(12,8);
-  display.print(bpm); 
-  }
-  display.setCursor(45,8);
-  display.print("BPM *");
-  display.display();
-  display_update = false;
-}
-
 void sync_display() {
-  EEPROMWriteInt(3,audio_syncPPQN);
+  //EEPROMWriteInt(3,audio_syncPPQN);
   
   int sync_current;
   sync_current = audio_syncPPQN - 12;  
@@ -335,49 +313,7 @@ void offset_display() {
   // display_update = false;
 }
 
-void all_off() { // make sure all sync, led pin stat to low
-  digitalWrite(AUDIO_SYNC_OUTPUT, LOW);
-  digitalWrite(AUDIO_SYNC_PPQN_OUTPUT, LOW);
-  digitalWrite(LED1_OUTPUT, LOW);
-}
-
-
-void loop(void) {
-  byte i = 0;
-  byte p = 0;
-
-  bRotary.update();
-  bStart.update();
-  bAlt.update();
-
-  if (bRotary.fell()) {
-    p = 1;
-  } else if (bStart.fell()) {
-    playing = !playing;
-    if (playing) {
-      delay(compensation);
-      uClock.start();
-    } else {
-      uClock.stop();
-    }
-  } else if (bAlt.fell()) {
-    if (bpm_editing && !offSet) {
-      inc_dec = !inc_dec;
-    } else if (!bpm_editing) {
-      offSet = !offSet;
-    }
-  }
-
-  int newPosition = (myEnc.read()/4);
-  if (newPosition != oldPosition) {    
-    if (oldPosition < newPosition) {
-      i = 2;
-    } else if (oldPosition > newPosition) {
-      i = 1;
-    }
-    oldPosition = newPosition;
-  }
-  
+void editDisplay() {
   if (bpm_editing && inc_dec) {
     bpm_dec_display();
     if (i == 2 ) {
@@ -392,7 +328,7 @@ void loop(void) {
       if (bpm < MINIMUM_BPM) {
         bpm = MINIMUM_BPM;
       }
-      	uClock.setTempo(bpm);
+        uClock.setTempo(bpm);
         bpm_dec_display();
       }
     
@@ -424,7 +360,7 @@ void loop(void) {
       bpm_editing = false;
     }
     
-  } else { // 2nd jack audio sync speed
+  } else { // 2nd jack CV sync resolution
       if (p == 1) {      
         bpm_display();
         offSet = false;
@@ -456,5 +392,57 @@ void loop(void) {
         sync_display();
       }
   }
+}
+
+int rotaryReadout() {
+  (myEnc.read()/4);
+  if (newPosition != oldPosition) {    
+    if (oldPosition < newPosition) {
+      i = 2;
+    } else if (oldPosition > newPosition) {
+      i = 1;
+    }
+    oldPosition = newPosition;
+  }
+  return i;
+}
+
+void all_off() { // make sure all sync, led pin stat to low
+  digitalWrite(CV_SYNC_OUTPUT, LOW);
+  digitalWrite(CV_SYNC_PPQN_OUTPUT, LOW);
+  digitalWrite(LED1_OUTPUT, LOW);
+}
+
+
+void loop(void) {
+  byte i = 0;
+  byte p = 0;
+
+  bRotary.update();
+  bStart.update();
+  bAlt.update();
+
+  if (bRotary.fell()) {
+    p = 1;
+  } else if (bStart.fell()) {
+    playing = !playing;
+    if (playing) {
+      delay(compensation);
+      uClock.start();
+    } else {
+      uClock.stop();
+    }
+  } else if (bAlt.fell()) {
+    if (bpm_editing && !offSet) {
+      inc_dec = !inc_dec;
+    } else if (!bpm_editing) {
+      offSet = !offSet;
+    }
+  }
+
+  i = rotaryReadout();
+
+  editDisplay();  
+
   while (usbMIDI.read());
 }
