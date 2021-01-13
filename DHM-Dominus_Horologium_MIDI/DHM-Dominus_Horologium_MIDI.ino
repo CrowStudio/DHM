@@ -42,7 +42,7 @@
 
 #define LED1_OUTPUT 13 // Tempo LED
 
-#define CV_SYNC_OUTPUT 23 // Audio Sync Digital Pin
+#define CV1_SYNC_OUTPUT 23 // Audio Sync Digital Pin
 #define CV_SYNC_PPQN_OUTPUT 22 // 2nd Audio Sync Pin
 
 #define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
@@ -72,7 +72,9 @@ uint8_t bpm_blink_timer = 1,
 
 long intervalMicroSeconds,
      bpm,
-     CVsyncPPQN,
+     CV1SyncPPQN,
+     CV2SyncPPQNDisplay,
+     CV2SyncPPQN,
      compensation;
 
 boolean display_update = false,
@@ -101,9 +103,9 @@ void setup(void) {
   if (bpm > MAXIMUM_BPM || bpm < MINIMUM_BPM) {
     bpm = 120;
   }
-  CVsyncPPQN = EEPROMReadInt(3);
-  if (CVsyncPPQN > 64 || CVsyncPPQN < 2) {
-    CVsyncPPQN = 12;
+  CV2SyncPPQN = EEPROMReadInt(3);
+  if (CV2SyncPPQN > 24 || CV2SyncPPQN < 1) {
+    CV2SyncPPQN = 1;
   }
   compensation = EEPROMReadInt(6);
   if (compensation > 1000 || compensation < 0) {
@@ -130,7 +132,7 @@ void setup(void) {
   pinMode(OLED_RESET_INPUT,INPUT);
   
   pinMode(LED1_OUTPUT,OUTPUT);
-  pinMode(CV_SYNC_OUTPUT,OUTPUT);
+  pinMode(CV1_SYNC_OUTPUT,OUTPUT);
   pinMode(CV_SYNC_PPQN_OUTPUT,OUTPUT);
 
   
@@ -159,22 +161,22 @@ void bpmLed(uint32_t * tick) {
     digitalWrite(LED1_OUTPUT, HIGH);
   } else if ( !(*tick % 24) ) {   // each quarter pulse led on 
     digitalWrite(LED1_OUTPUT, HIGH);
+    bpm_blink_timer = 1;
   } else if ( !(*tick % bpm_blink_timer) ) { // get led off
     digitalWrite(LED1_OUTPUT, LOW);
-    bpm_blink_timer = 1;
   }
 }
 
-// CV sync pulse
-void CVSyncPulse(uint32_t * tick) {
-  if ( !(*tick % 24) ) {   // each quarter pulse CV_SYNC_OUTPUT HIGH
-    digitalWrite(CV_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % cv_pulse_timer) ) { //  CV_SYNC_OUTPUT LOW
-    digitalWrite(CV_SYNC_OUTPUT, LOW);
+// CV1 sync pulse
+void CV1SyncPulse(uint32_t * tick) {
+  if ( !(*tick % CV1SyncPPQN) || (*tick == 1) ) {   // CV1_SYNC_OUTPUT HIGH depending on CV1SyncPPQN
+    digitalWrite(CV1_SYNC_OUTPUT, HIGH);
+  } else if ( !(*tick % cv_pulse_timer) ) { //  CV1_SYNC_OUTPUT LOW
+    digitalWrite(CV1_SYNC_OUTPUT, LOW);
   }
 }
 
-// // CV sync pulse PPQN led indicator
+// // CV2 sync pulse led indicator
 // void ppqnLed(uint32_t * tick) {
 //   if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4))) || (*tick == 1) ) {  // first quater pulse led will flash longer
 //     digitalWrite(LED1_OUTPUT, HIGH);
@@ -187,12 +189,12 @@ void CVSyncPulse(uint32_t * tick) {
 //   }
 // }
 
-// CV sync pulse PPQN
-void CVSyncPPQNPulse(uint32_t * tick) {
-  if ( !(*tick % CVsyncPPQN) ){   //  CV_SYNC_PPQN_OUTPUT HIGH
+// CV2 sync pulse PPQN
+void CV2SyncPulse(uint32_t * tick) {
+  if ( !(*tick % CV2SyncPPQN) ){   //  CV_SYNC_PPQN_OUTPUT HIGH
     digitalWrite(CV_SYNC_PPQN_OUTPUT, HIGH);
   } else if ( !(*tick % cv_pulse_timer) ) { //  CV_SYNC_PPQN_OUTPUT LOW
-    digitalWrite(CV_SYNC_OUTPUT, LOW);
+    digitalWrite(CV1_SYNC_OUTPUT, LOW);
   }
 }
 
@@ -201,7 +203,7 @@ void ClockOut96PPQN(uint32_t * tick) {
   // Send MIDI_CLOCK to external gears
   MIDI.sendRealTime(midi::Clock);
   usbMIDI.sendRealTime(usbMIDI.Clock);
-  CVSyncPulse(tick);
+  CV1SyncPulse(tick);
   bpmLed(tick);
 }
 
@@ -260,7 +262,9 @@ void detailedTimer() {
   display.setCursor(86, 14);
   display.println("1st CV");
   display.setCursor(86, 24);
-  display.println("2 PPQN");
+  display.println(CV2SyncPPQNDisplay);
+  display.setCursor(98, 24);
+  display.println(" PPQN");
 //  display.setTextSize(1);
 //  display.setCursor(0, 38);
 //  display.println("Clock Division:");
@@ -275,34 +279,22 @@ void detailedTimer() {
 }
 
 void sync_display() {
-  //EEPROMWriteInt(3,CVsyncPPQN);
-  
-  int sync_current;
-  sync_current = CVsyncPPQN - 12;  
-  
-  if (sync_current < 0) {    
-    sync_current = abs(sync_current);
-  } else if (sync_current > 0) {
-    sync_current = -sync_current;
-  }
-    
+  //EEPROMWriteInt(3,CV2SyncPPQN);
+ 
+      
   display.setTextSize(2);
   display.setCursor(0,8);
   display.setTextColor(WHITE, BLACK);
   display.clearDisplay();  
   display.setCursor(0,8);
   display.print("PPQN:");
-  if (sync_current >= 10) {
+  if (CV2SyncPPQNDisplay == 24) {
   display.setCursor(64,8);
-  display.print(sync_current);  
+  display.print(CV2SyncPPQNDisplay);  
   }
-  else if(sync_current < 10 && sync_current >= 0 ) {
+  else if(CV2SyncPPQNDisplay < 24 && CV2SyncPPQNDisplay >= 1 ) {
   display.setCursor(76,8);
-  display.print(sync_current); 
-  }
-  else if(sync_current < 0 ) {
-  display.setCursor(64,8);
-  display.print(sync_current); 
+  display.print(CV2SyncPPQNDisplay); 
   }
   display.display();
 }
@@ -335,8 +327,16 @@ void offset_display() {
   // display_update = false;
 }
 
+void setDisplayPPQN() {
+  if (CV2SyncPPQN == 1) { CV2SyncPPQNDisplay = 24; }
+  else if (CV2SyncPPQN == 6) { CV2SyncPPQNDisplay = 4; }
+  else if (CV2SyncPPQN == 8) { CV2SyncPPQNDisplay = 2; }
+  else if (CV2SyncPPQN == 24) { CV2SyncPPQNDisplay = 1; }
+}
+
 void editDisplay(int i, int p) {
   if (bpm_editing) {
+    setDisplayPPQN();
     detailedTimer();
     if (i == 2 ) {
       bpm = bpm + 1;
@@ -360,13 +360,17 @@ void editDisplay(int i, int p) {
         detailedTimer();
         offSet = false;
         bpm_editing = true;
-      } else if (!offSet && i == 1) {      
-        CVsyncPPQN++;
-        if (CVsyncPPQN > 64) { CVsyncPPQN = 64; }
+      } else if (!offSet && i == 2) {      
+        if (CV2SyncPPQN == 24) { CV2SyncPPQN = 8; }
+        else if (CV2SyncPPQN == 8) { CV2SyncPPQN = 6; }
+        else if (CV2SyncPPQN < 1 || CV2SyncPPQN == 6) { CV2SyncPPQN = 1; }
+        setDisplayPPQN();
         sync_display();
-      } else if (!offSet && i == 2) {
-        CVsyncPPQN--;
-        if (CVsyncPPQN < 2) { CVsyncPPQN = 2; }
+      } else if (!offSet && i == 1) {      
+        if (CV2SyncPPQN > 24 || CV2SyncPPQN == 1) { CV2SyncPPQN = 6; }
+        else if (CV2SyncPPQNDisplay == 4) { CV2SyncPPQN = 8; }
+        else if  (CV2SyncPPQNDisplay == 2) { CV2SyncPPQN = 24; }
+        setDisplayPPQN();
         sync_display();
       } else if (offSet) {
         offset_display();
@@ -403,7 +407,7 @@ int rotaryReadout() {
 }
 
 void all_off() { // make sure all sync, led pin stat to low
-  digitalWrite(CV_SYNC_OUTPUT, LOW);
+  digitalWrite(CV1_SYNC_OUTPUT, LOW);
   digitalWrite(CV_SYNC_PPQN_OUTPUT, LOW);
   digitalWrite(LED1_OUTPUT, LOW);
 }
