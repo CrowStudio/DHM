@@ -221,6 +221,39 @@ void onClockStop() {
   all_off();
 }
 
+void detectButtonPress() {
+  if (bRotary.fell()) {
+    p = 1;
+  } else if (bStart.fell()) {
+    playing = !playing;
+    if (playing) {
+      delay(compensation);
+      uClock.start();
+    } else {
+      uClock.stop();
+    }
+  } else if (bAlt.fell()) {
+    if (bpm_editing && !offSet) {
+      inc_dec = !inc_dec;
+    } else if (!bpm_editing) {
+      offSet = !offSet;
+    }
+  }
+}
+
+int rotaryReadout() {
+  newPosition = (myEnc.read()/4);
+  if (newPosition != oldPosition) {    
+    if (oldPosition < newPosition) {
+      i = 2;
+    } else if (oldPosition > newPosition) {
+      i = 1;
+    }
+    oldPosition = newPosition;
+  }
+  return i;
+}
+
 void EEPROMWriteInt(int p_address, int p_value)
      {
      byte lowByte = ((p_value >> 0) & 0xFF);
@@ -280,8 +313,6 @@ void detailedTimer() {
 
 void sync_display() {
   //EEPROMWriteInt(3,CV2SyncPPQN);
- 
-      
   display.setTextSize(2);
   display.setCursor(0,8);
   display.setTextColor(WHITE, BLACK);
@@ -390,22 +421,8 @@ void editDisplay(int i, int p) {
       } else {
         sync_display();
       }
-  }
-
-
-int rotaryReadout() {
-  newPosition = (myEnc.read()/4);
-  if (newPosition != oldPosition) {    
-    if (oldPosition < newPosition) {
-      i = 2;
-    } else if (oldPosition > newPosition) {
-      i = 1;
-    }
-    oldPosition = newPosition;
-  }
-  return i;
 }
-
+  
 void all_off() { // make sure all sync, led pin stat to low
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
   digitalWrite(CV_SYNC_PPQN_OUTPUT, LOW);
@@ -421,23 +438,7 @@ void loop(void) {
   bStart.update();
   bAlt.update();
 
-  if (bRotary.fell()) {
-    p = 1;
-  } else if (bStart.fell()) {
-    playing = !playing;
-    if (playing) {
-      delay(compensation);
-      uClock.start();
-    } else {
-      uClock.stop();
-    }
-  } else if (bAlt.fell()) {
-    if (bpm_editing && !offSet) {
-      inc_dec = !inc_dec;
-    } else if (!bpm_editing) {
-      offSet = !offSet;
-    }
-  }
+  detectButtonPress();
 
   i = rotaryReadout();
 
