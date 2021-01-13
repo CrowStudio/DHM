@@ -36,4 +36,4 @@ Rotary Encoder Push Button
   - Adjust Latency Compensation.
   - MIDI through ON/OFF.
 - Implement save values to SD.
-  - Remove save values to EEPROM. 
+  - Replace save values to EEPROM. 
