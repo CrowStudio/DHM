@@ -31,7 +31,8 @@ Rotary Encoder Push Button
   - Replace with +/- 1 per step at slow speed and icrease when truning faster.
 - Create Menu structure for Rotary Encoder Push Button.<br/>
   Select option with Rotary Encoder, edit with Alt(Select) Button, change value with Rotary Encoder, and press Alt(Select) Button to save/exit
-  - Individual Tempo Adjustment for CV Sync second jack.
+  - Individual PPQN Resolution for CV Sync jack.
+  - Individual Tempo Adjustment for CV Sync jack x 1/4, 1/2, 2, and 4.
   - Adjust Latency Compensation.
   - MIDI through ON/OFF.
   
