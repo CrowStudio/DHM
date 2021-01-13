@@ -260,7 +260,7 @@ void detailedTimer() {
   display.println("BPM");
   display.setTextSize(1);
   display.setCursor(86, 14);
-  display.println("1st CV");
+  display.println("2nd CV");
   display.setCursor(86, 24);
   display.println(CV2SyncPPQNDisplay);
   display.setCursor(98, 24);
