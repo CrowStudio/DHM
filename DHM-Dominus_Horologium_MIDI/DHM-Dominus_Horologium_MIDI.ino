@@ -60,11 +60,15 @@
 #define MAXIMUM_BPM 300
 
 
-int oldPosition;
+int oldPosition,
+    newPosition;
+    
+byte i,
+     p;
 
 uint8_t bpm_blink_timer = 1,
         //PPQN_blink_timer = 1,
-        cv_pulse_timer = 1,
+        cv_pulse_timer = 1;
 
 long intervalMicroSeconds,
      bpm,
@@ -97,9 +101,9 @@ void setup(void) {
   if (bpm > MAXIMUM_BPM || bpm < MINIMUM_BPM) {
     bpm = 120;
   }
-  audio_syncPPQN = EEPROMReadInt(3);
-  if (audio_syncPPQN > 64 || audio_syncPPQN < 2) {
-    audio_syncPPQN = 12;
+  CVsyncPPQN = EEPROMReadInt(3);
+  if (CVsyncPPQN > 64 || CVsyncPPQN < 2) {
+    CVsyncPPQN = 12;
   }
   compensation = EEPROMReadInt(6);
   if (compensation > 1000 || compensation < 0) {
@@ -197,7 +201,7 @@ void ClockOut96PPQN(uint32_t * tick) {
   // Send MIDI_CLOCK to external gears
   MIDI.sendRealTime(midi::Clock);
   usbMIDI.sendRealTime(usbMIDI.Clock);
-  audioSyncPulse(tick);
+  CVSyncPulse(tick);
   bpmLed(tick);
 }
 
@@ -253,10 +257,10 @@ void bpm_display() {
 }
 
 void sync_display() {
-  //EEPROMWriteInt(3,audio_syncPPQN);
+  //EEPROMWriteInt(3,CVsyncPPQN);
   
   int sync_current;
-  sync_current = audio_syncPPQN - 12;  
+  sync_current = CVsyncPPQN - 12;  
   
   if (sync_current < 0) {    
     sync_current = abs(sync_current);
@@ -313,65 +317,37 @@ void offset_display() {
   // display_update = false;
 }
 
-void editDisplay() {
-  if (bpm_editing && inc_dec) {
-    bpm_dec_display();
+void editDisplay(int i, int p) {
+  if (bpm_editing && !inc_dec) {
+    bpm_display();
     if (i == 2 ) {
       bpm = bpm + 10;
       if (bpm > MAXIMUM_BPM) {
         bpm = MAXIMUM_BPM;
       }
       uClock.setTempo(bpm);
-      bpm_dec_display();          
+      bpm_display();          
     } else if (i == 1) {
       bpm = bpm - 10;
       if (bpm < MINIMUM_BPM) {
         bpm = MINIMUM_BPM;
       }
         uClock.setTempo(bpm);
-        bpm_dec_display();
-      }
-    
-    else if (p == 1) {
-      sync_display();
-      bpm_editing = false;
-    }
-   
-  } else if (bpm_editing && !inc_dec) {
-      bpm_display();
-      if (i == 2) {
-        bpm++;
-        if (bpm > MAXIMUM_BPM) {
-          bpm = MAXIMUM_BPM;
-        }
-        uClock.setTempo(bpm);
-        bpm_display();        
-      } else if (i == 1) {
-        bpm--;
-        if (bpm < MINIMUM_BPM) {
-          bpm = MINIMUM_BPM;
-        }
-        uClock.setTempo(bpm);
         bpm_display();
       }
-    
-    else if (p == 1) {
-      sync_display();
-      bpm_editing = false;
-    }
-    
+      
   } else { // 2nd jack CV sync resolution
       if (p == 1) {      
         bpm_display();
         offSet = false;
         bpm_editing = true;
       } else if (!offSet && i == 1) {      
-        audio_syncPPQN++;
-        if (audio_syncPPQN > 64) { audio_syncPPQN = 64; }
+        CVsyncPPQN++;
+        if (CVsyncPPQN > 64) { CVsyncPPQN = 64; }
         sync_display();
       } else if (!offSet && i == 2) {
-        audio_syncPPQN--;
-        if (audio_syncPPQN < 2) { audio_syncPPQN = 2; }
+        CVsyncPPQN--;
+        if (CVsyncPPQN < 2) { CVsyncPPQN = 2; }
         sync_display();
       } else if (offSet) {
         offset_display();
@@ -415,8 +391,8 @@ void all_off() { // make sure all sync, led pin stat to low
 
 
 void loop(void) {
-  byte i = 0;
-  byte p = 0;
+  i = 0;
+  p = 0;
 
   bRotary.update();
   bStart.update();
@@ -442,7 +418,7 @@ void loop(void) {
 
   i = rotaryReadout();
 
-  editDisplay();  
+  editDisplay(i,p);  
 
   while (usbMIDI.read());
 }
