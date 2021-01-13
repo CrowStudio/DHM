@@ -12,7 +12,7 @@ CV
  - 2x CV Sync (3.5 mm mini jack) out.
  
 OLED display, 2 separate Push Buttons, 1 Rotary Encoder with Push Button.<br/>
-<img src="https://github.com/CrowStudio/DHM/blob/clock_division/media/Main_screen.jpg" alt="breadboard prototype" width="450">
+<img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="breadboard prototype" width="450">
 
 Start/Stop Button
  - Send Start/Stop to MIDI (DIN) and/or MIDI USB, and Start/Stop signal to Foot Switch jack for LiveTrak L-12, or ZOOM R8/R24.
