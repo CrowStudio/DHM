@@ -236,24 +236,42 @@ unsigned int EEPROMReadInt(int p_address)
      return ((lowByte << 0) & 0xFF) + ((highByte << 8) & 0xFF00);
 }
 
-void bpm_display() { 
-  //EEPROMWriteInt(0,bpm);  
-  display.setTextSize(2);
-  display.setCursor(0,8);  
+void detailedTimer() {
+  display.setTextSize(1);
+  display.setCursor(0,0);  
   display.setTextColor(WHITE, BLACK);
   display.clearDisplay();
-  if (bpm >= 100) {
-  display.setCursor(0,8);
-  display.print(bpm);  
-  }
-  else if(bpm < 100) {
-  display.setCursor(12,8);
-  display.print(bpm); 
-  }
-  display.setCursor(45,8);
-  display.print("BPM");
+  display.setCursor(0, 0);
+  display.println("Play Time: ");
+  display.setCursor(64, 0);
+  display.println(uClock.getNumberOfMinutes(uClock.getPlayTime()));
+  display.setCursor(84, 0);
+  display.println("m");
+  display.setCursor(96, 0);
+  display.println(uClock.getNumberOfSeconds(uClock.getPlayTime()));  
+  display.setCursor(114, 0);
+  display.println("s");
+  display.setTextSize(2);
+  display.setCursor(0, 15);
+  display.println(bpm);
+  display.setCursor(42, 15);
+  display.println("BPM");
+  display.setTextSize(1);
+  display.setCursor(86, 14);
+  display.println("1st CV");
+  display.setCursor(86, 24);
+  display.println("2 PPQN");
+//  display.setTextSize(1);
+//  display.setCursor(0, 38);
+//  display.println("Clock Division:");
+//  display.setCursor(92, 38);
+//  display.println("None");
+//  display.setCursor(0, 50);
+//  display.println("Device: ");
+//  display.setCursor(44, 50);
+//  display.println("LiveTrak L-12");
   display.display();
-  display_update = false;
+  // display_update = false;
 }
 
 void sync_display() {
@@ -318,27 +336,28 @@ void offset_display() {
 }
 
 void editDisplay(int i, int p) {
-  if (bpm_editing && !inc_dec) {
-    bpm_display();
+  if (bpm_editing) {
+    detailedTimer();
     if (i == 2 ) {
-      bpm = bpm + 10;
+      bpm = bpm + 1;
       if (bpm > MAXIMUM_BPM) {
         bpm = MAXIMUM_BPM;
       }
       uClock.setTempo(bpm);
-      bpm_display();          
+      detailedTimer();          
     } else if (i == 1) {
-      bpm = bpm - 10;
+      bpm = bpm - 1;
       if (bpm < MINIMUM_BPM) {
         bpm = MINIMUM_BPM;
       }
         uClock.setTempo(bpm);
-        bpm_display();
-      }
-      
-  } else { // 2nd jack CV sync resolution
-      if (p == 1) {      
-        bpm_display();
+        detailedTimer();
+    } else if (p == 1) {
+      sync_display();
+      bpm_editing = false;
+    }
+  } else if (p == 1) {      
+        detailedTimer();
         offSet = false;
         bpm_editing = true;
       } else if (!offSet && i == 1) {      
@@ -368,10 +387,10 @@ void editDisplay(int i, int p) {
         sync_display();
       }
   }
-}
+
 
 int rotaryReadout() {
-  (myEnc.read()/4);
+  newPosition = (myEnc.read()/4);
   if (newPosition != oldPosition) {    
     if (oldPosition < newPosition) {
       i = 2;
