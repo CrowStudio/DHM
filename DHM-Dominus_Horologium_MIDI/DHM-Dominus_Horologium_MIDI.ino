@@ -222,6 +222,13 @@ void onClockStop() {
 }
 
 void detectButtonPress() {
+  i = 0;
+  p = 0;
+
+  bRotary.update();
+  bStart.update();
+  bAlt.update();
+  
   if (bRotary.fell()) {
     p = 1;
   } else if (bStart.fell()) {
@@ -431,12 +438,6 @@ void all_off() { // make sure all sync, led pin stat to low
 
 
 void loop(void) {
-  i = 0;
-  p = 0;
-
-  bRotary.update();
-  bStart.update();
-  bAlt.update();
 
   detectButtonPress();
 
