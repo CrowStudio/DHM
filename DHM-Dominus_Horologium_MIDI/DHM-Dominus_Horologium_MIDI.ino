@@ -42,7 +42,7 @@
 #define LED1_OUTPUT 13 // Tempo LED
 
 #define CV1_SYNC_OUTPUT 23 // Audio Sync Digital Pin
-#define CV_SYNC_PPQN_OUTPUT 22 // 2nd Audio Sync Pin
+#define CV2_SYNC_OUTPUT 22 // 2nd Audio Sync Pin
 
 #define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
 #define BUTTON_START_INPUT 9 // Start/Stop Push Button
@@ -132,7 +132,7 @@ void setup(void) {
   
   pinMode(LED1_OUTPUT,OUTPUT);
   pinMode(CV1_SYNC_OUTPUT,OUTPUT);
-  pinMode(CV_SYNC_PPQN_OUTPUT,OUTPUT);
+  pinMode(CV2_SYNC_OUTPUT,OUTPUT);
 
   
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -190,9 +190,9 @@ void CV1SyncPulse(uint32_t * tick) {
 
 // CV2 sync pulse PPQN
 void CV2SyncPulse(uint32_t * tick) {
-  if ( !(*tick % CV2SyncPPQN) ){   //  CV_SYNC_PPQN_OUTPUT HIGH
-    digitalWrite(CV_SYNC_PPQN_OUTPUT, HIGH);
-  } else if ( !(*tick % cv_pulse_timer) ) { //  CV_SYNC_PPQN_OUTPUT LOW
+  if ( !(*tick % CV2SyncPPQN) ){   //  CV2_SYNC_OUTPUT HIGH
+    digitalWrite(CV2_SYNC_OUTPUT, HIGH);
+  } else if ( !(*tick % cv_pulse_timer) ) { //  CV2_SYNC_OUTPUT LOW
     digitalWrite(CV1_SYNC_OUTPUT, LOW);
   }
 }
@@ -431,7 +431,7 @@ void editDisplay(int i, int p) {
   
 void all_off() { // make sure all sync, led pin stat to low
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
-  digitalWrite(CV_SYNC_PPQN_OUTPUT, LOW);
+  digitalWrite(CV2_SYNC_OUTPUT, LOW);
   digitalWrite(LED1_OUTPUT, LOW);
 }
 
