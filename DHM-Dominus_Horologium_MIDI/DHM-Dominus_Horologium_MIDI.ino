@@ -65,7 +65,7 @@ uint8_t bpm_blink_timer = 1,
         cv_pulse_timer = 1;
 
 long bpm,
-     CV1SyncPPQN,
+     CV1SyncPPQN = 1,
      CV2SyncPPQNDisplay,
      CV2SyncPPQN,
      compensation;
@@ -153,7 +153,7 @@ void setup(void) {
 
 // BPM led indicator
 void bpmLed(uint32_t * tick) {
-  if ( !(*tick % 96) || (*tick == 1) ) {  // first quater pulse led will flash longer
+  if ( !(*tick % 96) || (*tick == 1) ) {  // start of bar led will flash longer
     bpm_blink_timer = 4;
     digitalWrite(LED1_OUTPUT, HIGH);
   } else if ( !(*tick % 24) ) {   // each quarter pulse led on 
@@ -166,21 +166,20 @@ void bpmLed(uint32_t * tick) {
 
 // CV1 sync pulse
 void CV1SyncPulse(uint32_t * tick) {
-  if ( !(*tick % 96) || (*tick == 1) ) {   // first quater pulse CV1_SYNC_OUTPUT HIGH
+  if ( !(*tick % 96) || (*tick == 1) ) {   // start of bar CV1_SYNC_OUTPUT HIGH
     digitalWrite(CV1_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % CV2SyncPPQN) ) {   // CV1_SYNC_OUTPUT HIGH tics per PPQN - 
-    // CV2SyncPPQN will be replaced by CV1SyncPPQN when the individual values is implemented
+  } else if ( !(*tick % CV1SyncPPQN) ) {   // pulses per quarter note CV1_SYNC_OUTPUT HIGH
     digitalWrite(CV1_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % cv_pulse_timer) ) { //  CV1_SYNC_OUTPUT LOW
     digitalWrite(CV1_SYNC_OUTPUT, LOW);
   }
 }
 
-// CV2 sync pulse PPQN
+// CV2 sync pulse
 void CV2SyncPulse(uint32_t * tick) {
-  if ( !(*tick % 96) || (*tick == 1) ) {   //  CV2_SYNC_OUTPUT HIGH
+  if ( !(*tick % 96) || (*tick == 1) ) {   //  start of bar CV2_SYNC_OUTPUT HIGH
     digitalWrite(CV2_SYNC_OUTPUT, HIGH);
-  } else if ( !(*tick % CV2SyncPPQN) ) {   // CV2_SYNC_OUTPUT HIGH tics per PPQN
+  } else if ( !(*tick % CV2SyncPPQN) ) {   // pulses per quarter note CV2_SYNC_OUTPUT HIGH
     digitalWrite(CV2_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % cv_pulse_timer) ) { //  CV2_SYNC_OUTPUT LOW
     digitalWrite(CV2_SYNC_OUTPUT, LOW);
@@ -193,6 +192,7 @@ void ClockOut96PPQN(uint32_t * tick) {
   MIDI.sendRealTime(midi::Clock);
   usbMIDI.sendRealTime(usbMIDI.Clock);
   CV1SyncPulse(tick);
+  CV2SyncPulse(tick);
   bpmLed(tick);
 }
 
