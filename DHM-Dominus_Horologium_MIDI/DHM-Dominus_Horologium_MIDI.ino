@@ -53,9 +53,6 @@
 
 #define BLINK_TIME 1 // LED blink time
 
-#define AUDIO_SYNC 12 // Audio Sync Ticks
-#define AUDIO_SYNC_PPQN 12 // 2nd Audio Sync Ticks
-
 #define MINIMUM_BPM 20
 #define MAXIMUM_BPM 300
 
@@ -179,19 +176,6 @@ void CV1SyncPulse(uint32_t * tick) {
     digitalWrite(CV1_SYNC_OUTPUT, LOW);
   }
 }
-
-// // CV2 sync pulse led indicator
-// void ppqnLed(uint32_t * tick) {
-//   if ( !(*tick % (96 + ((audio_syncPPQN - 12) * 4))) || (*tick == 1) ) {  // first quater pulse led will flash longer
-//     digitalWrite(LED1_OUTPUT, HIGH);
-//     PPQN_blink_timer = 4;
-//   } else if ( !(*tick % (24 + (audio_syncPPQN - 12))) ) {   // each quarter pulse led on
-//     digitalWrite(LED1_OUTPUT, HIGH);
-//   } else if ( !(*tick % PPQN_blink_timer) ) { // get led off
-//     digitalWrite(LED1_OUTPUT, LOW);
-//     PPQN_blink_timer = 1;
-//   }
-// }
 
 // CV2 sync pulse PPQN
 void CV2SyncPulse(uint32_t * tick) {
