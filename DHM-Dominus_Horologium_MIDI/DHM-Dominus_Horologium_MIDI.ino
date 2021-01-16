@@ -64,8 +64,7 @@ byte i,
 uint8_t bpm_blink_timer = 1,
         cv_pulse_timer = 1;
 
-long intervalMicroSeconds,
-     bpm,
+long bpm,
      CV1SyncPPQN,
      CV2SyncPPQNDisplay,
      CV2SyncPPQN,
