@@ -51,8 +51,6 @@
 
 #define OLED_RESET_INPUT 4
 
-#define BLINK_TIME 1 // LED blink time
-
 #define MINIMUM_BPM 20
 #define MAXIMUM_BPM 300
 
