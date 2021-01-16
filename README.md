@@ -1,7 +1,7 @@
 # DHM - Dominus Horologium MIDI
 Master Clock for MIDI, USB MIDI, CV Sync, and Sync Start for ZOOM LiveTrak L-12, ZOOM R8/R24.
 
-<br/>Breadboard Prototype with 1 CV out, 1 MIDI OUT, and 6.3mm start/stop sync out for the L-12 Foot Switch jack.
+<br/>Breadboard Prototype with 1 CV out, 1 MIDI OUT, and 6.3mm Start/Stop Sync out for the L-12 Foot Switch jack.
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/prototype_breadboard.jpg" alt="breadboard prototype 1 CV out, 1 MIDI OUT" width="450">
 
 Features:<br/>
