@@ -14,19 +14,24 @@ MIDI
 CV
  - 2x CV Sync (3.5 mm mini jack) out.
  
+ Start/Stop sync for Recording gear
+ - 1x "Foot Switch" (6.3mm jack) out.
+ 
 OLED display, 1 Rotary Encoder with Push Button, and 2 separate Push Buttons.<br/>
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="closeup on display" width="450">
-
-Start/Stop Button
- - Send Start/Stop to MIDI (DIN) and/or MIDI USB, and Start/Stop signal to Foot Switch jack for LiveTrak L-12, or ZOOM R8/R24.
 
 Rotary Enconder
  - Adjust BPM 10-300 with +/- 1 increments.<br/>
 
-Rotary Encoder Push Button
+Rotary Encoder Push Button (Menu mode)
  - Individual PPQN Resolution for CV Sync jack: 1, 2, 4, or 24 PPQN.<br/>
-   Push Alt Button
-   - Adjust Latency Compensation 0-1000 ms with +/- 10 increments.
+ 
+Alt Button
+ - Adjust Latency Compensation 0-1000 ms with +/- 10 increments, when in Menu mode.
+
+Start/Stop Button
+ - Send Start/Stop to MIDI (DIN) and/or MIDI USB, and Start/Stop signal to Foot Switch jack for LiveTrak L-12, or ZOOM R8/R24.
+  
 
 ## To do list
 - Verify individual PPQN Resolution for CV Sync jack.
