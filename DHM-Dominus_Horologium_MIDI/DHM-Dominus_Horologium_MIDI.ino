@@ -181,10 +181,12 @@ void CV1SyncPulse(uint32_t * tick) {
 
 // CV2 sync pulse PPQN
 void CV2SyncPulse(uint32_t * tick) {
-  if ( !(*tick % CV2SyncPPQN) ){   //  CV2_SYNC_OUTPUT HIGH
+  if ( !(*tick % 96) || (*tick == 1) ) {   //  CV2_SYNC_OUTPUT HIGH
+    digitalWrite(CV2_SYNC_OUTPUT, HIGH);
+  } else if ( !(*tick % CV2SyncPPQN) ) {   // CV2_SYNC_OUTPUT HIGH tics per PPQN
     digitalWrite(CV2_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % cv_pulse_timer) ) { //  CV2_SYNC_OUTPUT LOW
-    digitalWrite(CV1_SYNC_OUTPUT, LOW);
+    digitalWrite(CV2_SYNC_OUTPUT, LOW);
   }
 }
 
