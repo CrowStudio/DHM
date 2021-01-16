@@ -39,8 +39,7 @@ Start/Stop Button
   - Replace with +/- 1 per step at slow speed and icrease when truning faster.
 - Create Menu structure for Rotary Encoder Push Button.<br/>
   Select option with Rotary Encoder, edit with Alt(Select) Button, change value with Rotary Encoder, and press Alt(Select) Button to save/exit
-  - Individual PPQN Resolution for CV Sync jack.
-  - Individual Tempo Adjustment for CV Sync jack: x1/4, x1/2, x2, and x4.
+  - Individual PPQN Resolution for CV1 and CV2 Sync jack.
   - Adjust Latency Compensation.
   - MIDI through ON/OFF.
 - Implement save values to SD.
