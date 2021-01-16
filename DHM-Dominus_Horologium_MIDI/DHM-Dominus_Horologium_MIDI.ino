@@ -98,6 +98,7 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 void setup(void) {
   MIDI.begin(); // MIDI init
   MIDI.turnThruOff();
+
   
   bpm = EEPROMReadInt(0);
   if (bpm > MAXIMUM_BPM || bpm < MINIMUM_BPM) {
@@ -111,6 +112,7 @@ void setup(void) {
   if (compensation > 1000 || compensation < 0) {
     compensation = 0;
   }
+
   
   uClock.setDrift(11); // compensate latency - setDrift = 1 for USB Teensy, setDrift = 11 for MIDI
   uClock.init(); // Inits the clock
@@ -119,6 +121,7 @@ void setup(void) {
   uClock.setOnClockStopOutput(onClockStop);
   uClock.setTempo(bpm); // Set the clock BPM to last value
   // uClock.start(); // Starts the clock, tick-tac-tick-tac...
+  
 
   bRotary.attach(BUTTON_ROTARY_INPUT,INPUT_PULLUP); // Attach the debouncer to BUTTON_ROTARY_INPUT_INPUT pin with INPUT_PULLUP mode
   bRotary.interval(5); // Use a debounce interval of 5 milliseconds
@@ -135,8 +138,8 @@ void setup(void) {
   pinMode(CV1_SYNC_OUTPUT,OUTPUT);
   pinMode(CV2_SYNC_OUTPUT,OUTPUT);
   pinMode(FOOT_SWITCH_OUTPUT,OUTPUT);
-
   
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.clearDisplay();
   display.setTextColor(WHITE);  
@@ -237,9 +240,13 @@ void detectButtonPress() {
     if (playing) {
       delay(compensation);
       uClock.start();
-      digitalWrite(FOOT_SWITCH_OUTPUT, HIGH);
+      digitalWrite(FOOT_SWITCH_OUTPUT, HIGH);  // Start pulse
+      // needs to calculate ticks to be high
+      digitalWrite(FOOT_SWITCH_OUTPUT, LOW);
     } else {
       uClock.stop();
+      digitalWrite(FOOT_SWITCH_OUTPUT, HIGH);   // Stop pulse
+      // needs to calculate ticks to be high
       digitalWrite(FOOT_SWITCH_OUTPUT, LOW);
     }
   } else if (bAlt.fell()) {
@@ -432,6 +439,7 @@ void editDisplay(int i, int p) {
         sync_display();
       }
 }
+
   
 void all_off() { // make sure all sync, led pin stat to low
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
