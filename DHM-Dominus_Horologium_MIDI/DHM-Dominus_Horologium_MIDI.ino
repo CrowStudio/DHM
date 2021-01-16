@@ -95,7 +95,7 @@ void setup(void) {
   MIDI.begin(); // MIDI init
   MIDI.turnThruOff();
 
-  
+
   bpm = EEPROMReadInt(0);
   if (bpm > MAXIMUM_BPM || bpm < MINIMUM_BPM) {
     bpm = 120;
@@ -169,7 +169,10 @@ void bpmLed(uint32_t * tick) {
 
 // CV1 sync pulse
 void CV1SyncPulse(uint32_t * tick) {
-  if ( !(*tick % CV1SyncPPQN) || (*tick == 1) ) {   // CV1_SYNC_OUTPUT HIGH depending on CV1SyncPPQN
+  if ( !(*tick % 96) || (*tick == 1) ) {   // first quater pulse CV1_SYNC_OUTPUT HIGH
+    digitalWrite(CV1_SYNC_OUTPUT, HIGH);
+  } else if ( !(*tick % CV2SyncPPQN) ) {   // CV1_SYNC_OUTPUT HIGH tics per PPQN - 
+    // CV2SyncPPQN will be replaced by CV1SyncPPQN when the individual values is implemented
     digitalWrite(CV1_SYNC_OUTPUT, HIGH);
   } else if ( !(*tick % cv_pulse_timer) ) { //  CV1_SYNC_OUTPUT LOW
     digitalWrite(CV1_SYNC_OUTPUT, LOW);
