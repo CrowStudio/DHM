@@ -14,7 +14,7 @@ MIDI
 CV
  - 2x CV Sync (3.5 mm mini TRS jack) out.
  
- Start/Stop sync for Recording gear
+ Start/Stop Sync --> Recording gear.
  - 1x "Foot Switch" (6.3 mm TRS jack) out.
  
 OLED display.<br/>
