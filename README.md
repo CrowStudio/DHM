@@ -21,7 +21,7 @@ OLED display.<br/>
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="closeup on display" width="450">
 
 Rotary Enconder
- - Adjust BPM 10-300 with +/- 1 increments.<br/>
+ - Adjust BPM 20-300 with +/- 1 increments.<br/>
 
 Rotary Encoder Push Button (Menu mode)
  - Individual PPQN Resolution for CV Sync jack: 1, 2, 4, or 24 PPQN.<br/>
