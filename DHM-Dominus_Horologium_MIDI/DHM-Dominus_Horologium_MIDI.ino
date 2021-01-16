@@ -1,4 +1,4 @@
-/* DHM - Dominus Horologium MIDI
+/* DHM - Dominus Horologium MIDIremoved
  * Master Clock for MIDI, USB MIDI, Pocket Operators, Volcas, and sync start for LiveTrak L12.
  * https://github.com/CrowStudio/DHM
  * 
@@ -64,7 +64,6 @@ byte i,
      p;
 
 uint8_t bpm_blink_timer = 1,
-        //PPQN_blink_timer = 1,
         cv_pulse_timer = 1;
 
 long intervalMicroSeconds,
