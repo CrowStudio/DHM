@@ -43,7 +43,7 @@
 
 #define CV1_SYNC_OUTPUT 26 // 1st CV Sync Pin
 #define CV2_SYNC_OUTPUT 27 // 2nd CV Sync Pin
-#define FOOT_SWITCH_OUTPUT 28 // Start/Stopp Sync for L-12/R8/R24 Foot Switch jack
+#define CONTROL_OUTPUT 28 // Start/Stopp Sync for L-12/R8/R24 Control IN jack
 
 #define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
 #define BUTTON_START_INPUT 9 // Start/Stop Push Button
@@ -137,7 +137,7 @@ void setup(void) {
   pinMode(LED1_OUTPUT,OUTPUT);
   pinMode(CV1_SYNC_OUTPUT,OUTPUT);
   pinMode(CV2_SYNC_OUTPUT,OUTPUT);
-  pinMode(FOOT_SWITCH_OUTPUT,OUTPUT);
+  pinMode(CONTROL_OUTPUT,OUTPUT);
   
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -240,14 +240,14 @@ void detectButtonPress() {
     if (playing) {
       delay(compensation);
       uClock.start();
-      digitalWrite(FOOT_SWITCH_OUTPUT, HIGH);  // Start pulse
+      digitalWrite(CONTROL_OUTPUT, HIGH);  // Start pulse
       // needs to calculate ticks to be high
-      digitalWrite(FOOT_SWITCH_OUTPUT, LOW);
+      digitalWrite(CONTROL_OUTPUT, LOW);
     } else {
       uClock.stop();
-      digitalWrite(FOOT_SWITCH_OUTPUT, HIGH);   // Stop pulse
+      digitalWrite(CONTROL_OUTPUT, HIGH);   // Stop pulse
       // needs to calculate ticks to be high
-      digitalWrite(FOOT_SWITCH_OUTPUT, LOW);
+      digitalWrite(CONTROL_OUTPUT, LOW);
     }
   } else if (bAlt.fell()) {
     if (bpm_editing && !offSet) {
@@ -444,7 +444,7 @@ void editDisplay(int i, int p) {
 void all_off() { // make sure all sync, led pin stat to low
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
   digitalWrite(CV2_SYNC_OUTPUT, LOW);
-  digitalWrite(FOOT_SWITCH_OUTPUT, LOW);
+  digitalWrite(CONTROL_OUTPUT, LOW);
   digitalWrite(LED1_OUTPUT, LOW);
 }
 
