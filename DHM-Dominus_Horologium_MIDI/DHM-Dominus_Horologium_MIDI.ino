@@ -41,8 +41,8 @@
 
 #define LED1_OUTPUT 13 // Tempo LED
 
-#define CV1_SYNC_OUTPUT 23 // Audio Sync Digital Pin
-#define CV2_SYNC_OUTPUT 22 // 2nd Audio Sync Pin
+#define CV1_SYNC_OUTPUT 26 // 1st CV Sync Pin
+#define CV2_SYNC_OUTPUT 27 // 2nd CV Sync Pin
 
 #define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
 #define BUTTON_START_INPUT 9 // Start/Stop Push Button
