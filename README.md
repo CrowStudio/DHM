@@ -12,10 +12,10 @@ MIDI
  - 1x USB MIDI out.
 
 CV
- - 2x CV Sync (3.5 mm mini jack) out.
+ - 2x CV Sync (3.5 mm mini TRS jack) out.
  
  Start/Stop sync for Recording gear
- - 1x "Foot Switch" (6.3mm jack) out.
+ - 1x "Foot Switch" (6.3 mm TRS jack) out.
  
 OLED display, 1 Rotary Encoder with Push Button, and 2 separate Push Buttons.<br/>
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="closeup on display" width="450">
