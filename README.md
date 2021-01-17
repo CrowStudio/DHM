@@ -34,7 +34,6 @@ Start/Stop Button
   
 
 ## To do list
-- Verify individual PPQN Resolution for CV Sync jack.
 - Add speed-up for Rotary Encoder.
   - Replace with +/- 1 per step at slow speed and icrease when truning faster.
 - Create Menu structure for Rotary Encoder Push Button.<br/>
