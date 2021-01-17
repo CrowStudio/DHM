@@ -98,8 +98,8 @@ void setup(void) {
     bpm = 120;
   }
   CV2SyncPPQN = EEPROMReadInt(3);
-  if (CV2SyncPPQN > 24 || CV2SyncPPQN < 1) {
-    CV2SyncPPQN = 1;
+  if (CV2SyncPPQN > 48 || CV2SyncPPQN < 1) {
+    CV2SyncPPQN = 12;
   }
   compensation = EEPROMReadInt(6);
   if (compensation > 1000 || compensation < 0) {
@@ -289,15 +289,28 @@ void detailedTimer() {
   display.setTextSize(2);
   display.setCursor(0, 15);
   display.println(bpm);
-  display.setCursor(42, 15);
+  display.setCursor(40, 15);
   display.println("BPM");
   display.setTextSize(1);
   display.setCursor(86, 14);
   display.println("2nd CV");
-  display.setCursor(86, 24);
-  display.println(CV2SyncPPQNDisplay);
-  display.setCursor(98, 24);
-  display.println(" PPQN");
+  if (CV2SyncPPQNDisplay == 12) {
+    display.setCursor(82, 24);
+    display.println(CV2SyncPPQNDisplay);
+    display.setCursor(100, 24);
+    display.println("PPQN");
+  } else if (CV2SyncPPQNDisplay <= 8 && CV2SyncPPQNDisplay > 0) {
+    display.setCursor(86, 24);
+    display.println(CV2SyncPPQNDisplay);
+    display.setCursor(92, 24);
+    display.println(" PPQN");
+  } else if (CV2SyncPPQNDisplay == 0) {
+    display.setCursor(80, 24);
+    display.println("0.5");
+    display.setCursor(98, 24);
+    display.println(" PPQN");
+  }
+  
 //  display.setTextSize(1);
 //  display.setCursor(0, 38);
 //  display.println("Clock Division:");
@@ -319,13 +332,15 @@ void sync_display() {
   display.clearDisplay();  
   display.setCursor(0,8);
   display.print("PPQN:");
-  if (CV2SyncPPQNDisplay == 24) {
-  display.setCursor(64,8);
-  display.print(CV2SyncPPQNDisplay);  
-  }
-  else if(CV2SyncPPQNDisplay < 24 && CV2SyncPPQNDisplay >= 1 ) {
-  display.setCursor(76,8);
-  display.print(CV2SyncPPQNDisplay); 
+  if (CV2SyncPPQNDisplay == 48) {
+    display.setCursor(64,8);
+    display.print(CV2SyncPPQNDisplay);  
+  } else if(CV2SyncPPQNDisplay < 48 && CV2SyncPPQNDisplay >= 1 ) {
+    display.setCursor(76,8);
+    display.print(CV2SyncPPQNDisplay); 
+  } else if(CV2SyncPPQNDisplay == 0 ) {
+    display.setCursor(76,8);
+    display.print("0.5"); 
   }
   display.display();
 }
@@ -337,20 +352,17 @@ void offset_display() {
   display.setTextColor(WHITE, BLACK);
   display.clearDisplay();
   if (compensation == 1000) {
-  display.setCursor(0,12);
-  display.print(compensation);  
-  }
-  if (compensation >= 100 && compensation < 1000) {
-  display.setCursor(6,12);
-  display.print(compensation);  
-  }
-  else if(compensation > 0 && compensation < 100) {
-  display.setCursor(12,12);
-  display.print(compensation); 
-  }
-  else if(compensation == 0) {
-  display.setCursor(18,12);
-  display.print(compensation); 
+    display.setCursor(0,12);
+    display.print(compensation);  
+  } else if (compensation >= 100 && compensation < 1000) {
+    display.setCursor(6,12);
+    display.print(compensation);  
+  } else if(compensation > 0 && compensation < 100) {
+    display.setCursor(12,12);
+    display.print(compensation); 
+  } else if(compensation == 0) {
+    display.setCursor(18,12);
+    display.print(compensation); 
   }
   display.setCursor(28,12);
   display.print("ms  Start Offset");
@@ -359,10 +371,12 @@ void offset_display() {
 }
 
 void setDisplayPPQN() {
-  if (CV2SyncPPQN == 1) { CV2SyncPPQNDisplay = 24; }
+  if (CV2SyncPPQN == 2) { CV2SyncPPQNDisplay = 12; }
+  else if (CV2SyncPPQN == 3) { CV2SyncPPQNDisplay = 8; }
   else if (CV2SyncPPQN == 6) { CV2SyncPPQNDisplay = 4; }
-  else if (CV2SyncPPQN == 8) { CV2SyncPPQNDisplay = 2; }
+  else if (CV2SyncPPQN == 12) { CV2SyncPPQNDisplay = 2; }
   else if (CV2SyncPPQN == 24) { CV2SyncPPQNDisplay = 1; }
+  else if (CV2SyncPPQN == 48) { CV2SyncPPQNDisplay = 0; }
 }
 
 void editDisplay(int i, int p) {
@@ -392,15 +406,19 @@ void editDisplay(int i, int p) {
         offSet = false;
         bpm_editing = true;
       } else if (!offSet && i == 2) {      
-        if (CV2SyncPPQN == 24) { CV2SyncPPQN = 8; }
-        else if (CV2SyncPPQN == 8) { CV2SyncPPQN = 6; }
-        else if (CV2SyncPPQN < 1 || CV2SyncPPQN == 6) { CV2SyncPPQN = 1; }
+        if (CV2SyncPPQN == 48) { CV2SyncPPQN = 24; }
+        else if (CV2SyncPPQN == 24) { CV2SyncPPQN = 12; }
+        else if (CV2SyncPPQN == 12) { CV2SyncPPQN = 6; }
+        else if (CV2SyncPPQN == 6) { CV2SyncPPQN = 3; }
+        else if (CV2SyncPPQN < 2 || CV2SyncPPQN == 3) { CV2SyncPPQN = 2; }
         setDisplayPPQN();
         sync_display();
       } else if (!offSet && i == 1) {      
-        if (CV2SyncPPQN > 24 || CV2SyncPPQN == 1) { CV2SyncPPQN = 6; }
-        else if (CV2SyncPPQNDisplay == 4) { CV2SyncPPQN = 8; }
-        else if  (CV2SyncPPQNDisplay == 2) { CV2SyncPPQN = 24; }
+        if (CV2SyncPPQN > 48 || CV2SyncPPQN == 2) { CV2SyncPPQN = 3; }
+        else if (CV2SyncPPQN == 3) { CV2SyncPPQN = 6; }
+        else if (CV2SyncPPQN == 6) { CV2SyncPPQN = 12; }
+        else if  (CV2SyncPPQN == 12) { CV2SyncPPQN = 24; }
+        else if  (CV2SyncPPQN == 24) { CV2SyncPPQN = 48; }
         setDisplayPPQN();
         sync_display();
       } else if (offSet) {
