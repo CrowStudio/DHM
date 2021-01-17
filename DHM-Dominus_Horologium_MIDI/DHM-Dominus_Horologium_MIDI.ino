@@ -376,7 +376,7 @@ void setDisplayPPQN() {
   else if (CV2SyncPPQN == 6) { CV2SyncPPQNDisplay = 4; }
   else if (CV2SyncPPQN == 12) { CV2SyncPPQNDisplay = 2; }
   else if (CV2SyncPPQN == 24) { CV2SyncPPQNDisplay = 1; }
-  else if (CV2SyncPPQN == 48) { CV2SyncPPQNDisplay = 0; }
+  else if (CV2SyncPPQN == 48) { CV2SyncPPQNDisplay = 0; } // 0.5 PPQN
 }
 
 void editDisplay(int i, int p) {
