@@ -24,7 +24,7 @@ Rotary Enconder
  - Adjust BPM 20-300 with +/- 1 increments.<br/>
 
 Rotary Encoder Push Button (Menu mode)
- - Individual PPQN Resolution for CV Sync jack: 1, 2, 4, or 24 PPQN.<br/>
+ - Individual PPQN Resolution for CV Sync jack: 0.5, 1, 2, 4, 8, or 12 PPQN.<br/>
  
 Alt Button
  - Adjust Latency Compensation 0-1000 ms with +/- 10 increments, when in Menu mode.
