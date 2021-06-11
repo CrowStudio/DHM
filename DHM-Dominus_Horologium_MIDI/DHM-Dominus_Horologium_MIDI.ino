@@ -70,6 +70,10 @@ long bpm,
      CV2SyncPPQN,
      compensation;
 
+unsigned long FSSyncTime = 100,
+              syncPulse,
+              currentTime;
+
 boolean display_update = false,
         playing = false,
         bpm_editing = !false,
@@ -223,16 +227,14 @@ void detectButtonPress() {
   } else if (bStart.fell()) {
     playing = !playing;
     if (playing) {
+      syncPulse = millis();
+      digitalWrite(CONTROL_OUTPUT, HIGH);
       delay(compensation);
       uClock.start();
-      digitalWrite(CONTROL_OUTPUT, HIGH);  // Start pulse
-      // needs to calculate ticks to be high
-      digitalWrite(CONTROL_OUTPUT, LOW);
     } else {
       uClock.stop();
-      digitalWrite(CONTROL_OUTPUT, HIGH);   // Stop pulse
-      // needs to calculate ticks to be high
-      digitalWrite(CONTROL_OUTPUT, LOW);
+      syncPulse = millis();
+      digitalWrite(CONTROL_OUTPUT, HIGH);
     }
   } else if (bAlt.fell()) {
     if (bpm_editing && !offSet) {
@@ -451,8 +453,9 @@ void all_off() { // make sure all sync, led pin stat to low
 
 
 void loop(void) {
-
   detectButtonPress();
+  currentTime = millis();
+  if(currentTime - syncPulse >= FSSyncTime) {digitalWrite(CONTROL_OUTPUT, LOW);}
 
   i = rotaryReadout();
 
