@@ -67,10 +67,10 @@ uint8_t bpm_blink_timer = 1,
 long bpm,
      CV1SyncPPQN = 1,
      CV2SyncPPQNDisplay,
-     CV2SyncPPQN,
-     compensation;
+     CV2SyncPPQN;
 
 unsigned long FSSyncTime = 100,
+              midiOffset,
               syncPulse,
               currentTime;
 
@@ -78,7 +78,8 @@ boolean display_update = false,
         playing = false,
         bpm_editing = !false,
         inc_dec = false,
-        offSet = false;
+        offSet = false,
+        offsetSync = false;
 
 
 Encoder myEnc(29, 30); // Rotary Encoder Pin 29,30 
@@ -105,9 +106,9 @@ void setup(void) {
   if (CV2SyncPPQN > 48 || CV2SyncPPQN < 1) {
     CV2SyncPPQN = 12;
   }
-  compensation = EEPROMReadInt(6);
-  if (compensation > 1000 || compensation < 0) {
-    compensation = 0;
+  midiOffset = EEPROMReadInt(6);
+  if (midiOffset > 1000 || midiOffset < 0) {
+    midiOffset = 200;
   }
 
   
@@ -229,12 +230,12 @@ void detectButtonPress() {
     if (playing) {
       syncPulse = millis();
       digitalWrite(CONTROL_OUTPUT, HIGH);
-      delay(compensation);
-      uClock.start();
     } else {
       uClock.stop();
+      offsetSync = false;
       syncPulse = millis();
       digitalWrite(CONTROL_OUTPUT, HIGH);
+      
     }
   } else if (bAlt.fell()) {
     if (bpm_editing && !offSet) {
@@ -348,23 +349,23 @@ void sync_display() {
 }
 
 void offset_display() {
-  EEPROMWriteInt(6,compensation);
+  EEPROMWriteInt(6,midiOffset);
   display.setTextSize(1);
   display.setCursor(0,12);  
   display.setTextColor(WHITE, BLACK);
   display.clearDisplay();
-  if (compensation == 1000) {
+  if (midiOffset == 1000) {
     display.setCursor(0,12);
-    display.print(compensation);  
-  } else if (compensation >= 100 && compensation < 1000) {
+    display.print(midiOffset);  
+  } else if (midiOffset >= 100 && midiOffset < 1000) {
     display.setCursor(6,12);
-    display.print(compensation);  
-  } else if(compensation > 0 && compensation < 100) {
+    display.print(midiOffset);  
+  } else if(midiOffset > 0 && midiOffset < 100) {
     display.setCursor(12,12);
-    display.print(compensation); 
-  } else if(compensation == 0) {
+    display.print(midiOffset); 
+  } else if(midiOffset == 0) {
     display.setCursor(18,12);
-    display.print(compensation); 
+    display.print(midiOffset); 
   }
   display.setCursor(28,12);
   display.print("ms  Start Offset");
@@ -426,15 +427,15 @@ void editDisplay(int i, int p) {
       } else if (offSet) {
         offset_display();
          if (i == 2 ) {
-          compensation = compensation + 10; 
-          if (compensation > 1000) {
-            compensation = 1000;
+          midiOffset = midiOffset + 5; 
+          if (midiOffset > 1000) {
+            midiOffset = 1000;
           }
           offset_display();          
         } else if (i == 1) {
-            compensation = compensation - 10;
-            if (compensation < 0) {
-              compensation = 0;
+            midiOffset = midiOffset - 5;
+            if (midiOffset < 0) {
+              midiOffset = 0;
             }
             offset_display();
         }
@@ -455,8 +456,9 @@ void all_off() { // make sure all sync, led pin stat to low
 void loop(void) {
   detectButtonPress();
   currentTime = millis();
+  if(currentTime - syncPulse >= midiOffset && playing && !offsetSync) {uClock.start(), offsetSync = true;}
   if(currentTime - syncPulse >= FSSyncTime) {digitalWrite(CONTROL_OUTPUT, LOW);}
-
+  
   i = rotaryReadout();
 
   editDisplay(i,p);  
