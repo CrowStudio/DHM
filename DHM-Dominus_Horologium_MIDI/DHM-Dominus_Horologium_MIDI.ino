@@ -104,11 +104,11 @@ void setup(void) {
   }
   CV2SyncPPQN = EEPROMReadInt(3);
   if (CV2SyncPPQN > 48 || CV2SyncPPQN < 1) {
-    CV2SyncPPQN = 12;
+    CV2SyncPPQN = 12; // standrard Korg resolution is 2 PPQN
   }
   midiOffset = EEPROMReadInt(6);
   if (midiOffset > 1000 || midiOffset < 0) {
-    midiOffset = 200;
+    midiOffset = 200;  // estimated latency for Start on the LiveTrak L-12
   }
 
   
@@ -228,12 +228,12 @@ void detectButtonPress() {
   } else if (bStart.fell()) {
     playing = !playing;
     if (playing) {
-      syncPulse = millis();
+      syncPulse = millis(); // time to keep track of Control In pulse, and Master Clock latency compensation
       digitalWrite(CONTROL_OUTPUT, HIGH);
     } else {
       uClock.stop();
-      offsetSync = false;
-      syncPulse = millis();
+      offsetSync = false; // variable to keep track of Master Clock latency compensation
+      syncPulse = millis(); // time to keep track of Control In pulse
       digitalWrite(CONTROL_OUTPUT, HIGH);
       
     }
@@ -445,7 +445,7 @@ void editDisplay(int i, int p) {
 }
 
   
-void all_off() { // make sure all sync, led pin stat to low
+void all_off() { // make sure LED pin, Control pin, and CV pins are set to low at Stop
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
   digitalWrite(CV2_SYNC_OUTPUT, LOW);
   digitalWrite(CONTROL_OUTPUT, LOW);
@@ -455,9 +455,9 @@ void all_off() { // make sure all sync, led pin stat to low
 
 void loop(void) {
   detectButtonPress();
-  currentTime = millis();
-  if(currentTime - syncPulse >= midiOffset && playing && !offsetSync) {uClock.start(), offsetSync = true;}
-  if(currentTime - syncPulse >= FSSyncTime) {digitalWrite(CONTROL_OUTPUT, LOW);}
+  currentTime = millis(); // measures the time passed after Start/Stop button is pressed
+  if(currentTime - syncPulse >= midiOffset && playing && !offsetSync) { uClock.start(), offsetSync = true; } // checks that time (latency compensation) is reached to start Master Clock 
+  if(currentTime - syncPulse >= FSSyncTime) { digitalWrite(CONTROL_OUTPUT, LOW); } // checks that the time (FFSyncTime) for Control In pulse is reached to set CONTROL_OUTPUT to low
   
   i = rotaryReadout();
 
