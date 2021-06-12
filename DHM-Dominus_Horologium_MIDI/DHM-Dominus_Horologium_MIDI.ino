@@ -77,7 +77,7 @@ unsigned long FSSyncTime = 100,
 boolean display_update = false,
         playing = false,
         bpm_editing = !false,
-        inc_dec = false,
+        //inc_dec = false,
         offSet = false,
         offsetSync = false;
 
@@ -238,10 +238,11 @@ void detectButtonPress() {
       
     }
   } else if (bAlt.fell()) {
-    if (bpm_editing && !offSet) {
-      inc_dec = !inc_dec;
-    } else if (!bpm_editing) {
-      offSet = !offSet;
+    // if (bpm_editing && !offSet) {
+    //   inc_dec = !inc_dec;
+    // } 
+      if (!bpm_editing) {
+        offSet = !offSet;
     }
   }
 }
