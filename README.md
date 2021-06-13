@@ -13,7 +13,7 @@ CV
  - 1x CV(2) Sync (3.5 mm mini TRS jack) out.
  
  Start/Stop Pulse for Recording gear.
- - 1x Control (6.3 mm TR jack) out.
+ - 1x Control (6.3 mm TS jack) out.
  
 OLED display.<br/>
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="closeup on display" width="450">
