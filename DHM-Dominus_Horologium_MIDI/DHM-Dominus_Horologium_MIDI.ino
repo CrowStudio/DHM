@@ -69,7 +69,7 @@ byte i,
      p;
 
 uint8_t bpm_blink_timer = 1,
-        cv_pulse_timer = 6;
+        cv_pulse_timer = 1;
 
 long bpm,
      CV1SyncPPQN = 1,
