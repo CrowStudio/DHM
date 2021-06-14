@@ -39,15 +39,22 @@
 #include <uClock.h>
 
 
-#define LED1_OUTPUT 13 // Tempo LED
+// Tempo LED
+#define LED1_OUTPUT 13
 
-#define CV1_SYNC_OUTPUT 26 // 1st CV Sync Pin
-#define CV2_SYNC_OUTPUT 27 // 2nd CV Sync Pin
-#define CONTROL_OUTPUT 28 // Start/Stopp Sync for L-12/R8/R24 Control IN jack
+// 1st CV Sync Pin
+#define CV1_SYNC_OUTPUT 26
+// 2nd CV Sync Pin
+#define CV2_SYNC_OUTPUT 27
+// Start/Stopp Sync for L-12/L-20/L-20R/R8/R24 Control In jack
+#define CONTROL_OUTPUT 28
 
-#define BUTTON_ROTARY_INPUT 10 // Rotary Encoder Button
-#define BUTTON_START_INPUT 9 // Start/Stop Push Button
-#define BUTTON_ALT_INPUT 24 // Alt Push Button
+// Rotary Encoder Button
+#define BUTTON_ROTARY_INPUT 10
+// Start/Stop Push Button
+#define BUTTON_START_INPUT 9
+// Alt Push Button
+#define BUTTON_ALT_INPUT 24
 
 #define OLED_RESET_INPUT 4
 
@@ -82,9 +89,11 @@ boolean display_update = false,
         offsetSync = false;
 
 
-Encoder myEnc(29, 30); // Rotary Encoder Pin 29,30 
+// Rotary Encoder Pin 29,30
+Encoder myEnc(29, 30);
 
-Bounce bRotary = Bounce(); // Instantiate Bounce objects
+// Instantiate Bounce objects
+Bounce bRotary = Bounce();
 Bounce bStart = Bounce(); 
 Bounce bAlt = Bounce();
 
@@ -94,7 +103,8 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 
 void setup(void) {
-  MIDI.begin(); // MIDI init
+  // MIDI init
+  MIDI.begin();
   MIDI.turnThruOff();
 
 
@@ -103,32 +113,45 @@ void setup(void) {
     bpm = 120;
   }
   CV2SyncPPQN = EEPROMReadInt(3);
+  // standrard Korg resolution is 2 PPQN
   if (CV2SyncPPQN > 48 || CV2SyncPPQN < 1) {
-    CV2SyncPPQN = 12; // standrard Korg resolution is 2 PPQN
+    CV2SyncPPQN = 12;
   }
   midiOffset = EEPROMReadInt(6);
+  // estimated latency for Start on the LiveTrak L-12
   if (midiOffset > 1000 || midiOffset < 0) {
-    midiOffset = 200;  // estimated latency for Start on the LiveTrak L-12
+    midiOffset = 200;
   }
 
   
-  uClock.setDrift(11); // compensate latency - setDrift = 1 for USB Teensy, setDrift = 11 for MIDI
-  uClock.init(); // Inits the clock
-  uClock.setClock96PPQNOutput(ClockOut96PPQN); // Set the callback function for the clock output to send MIDI Sync message.
-  uClock.setOnClockStartOutput(onClockStart);  // Set the callback function for MIDI Start and Stop messages.
+  // compensate latency - setDrift = 1 for USB Teensy, setDrift = 11 for MIDI
+  uClock.setDrift(11);
+  // Inits the clock
+  uClock.init();
+  // Set the callback function for the clock output to send MIDI Sync message.
+  uClock.setClock96PPQNOutput(ClockOut96PPQN);
+  // Set the callback function for MIDI Start and Stop messages.
+  uClock.setOnClockStartOutput(onClockStart);
   uClock.setOnClockStopOutput(onClockStop);
-  uClock.setTempo(bpm); // Set the clock BPM to last value
+  // Set the clock BPM to last value
+  uClock.setTempo(bpm);
   // uClock.start(); // Starts the clock, tick-tac-tick-tac...
   
 
-  bRotary.attach(BUTTON_ROTARY_INPUT,INPUT_PULLUP); // Attach the debouncer to BUTTON_ROTARY_INPUT_INPUT pin with INPUT_PULLUP mode
-  bRotary.interval(5); // Use a debounce interval of 5 milliseconds
+  // Attach the debouncer to BUTTON_ROTARY_INPUT_INPUT pin with INPUT_PULLUP mode
+  bRotary.attach(BUTTON_ROTARY_INPUT,INPUT_PULLUP); 
+  // Use a debounce interval of 5 milliseconds
+  bRotary.interval(5);
   
-  bStart.attach(BUTTON_START_INPUT,INPUT_PULLUP); // Attach the debouncer to BUTTON_START_INPUT pin with INPUT_PULLUP mode
-  bStart.interval(5); // Use a debounce interval of 5 milliseconds
+  // Attach the debouncer to BUTTON_START_INPUT pin with INPUT_PULLUP mode
+  bStart.attach(BUTTON_START_INPUT,INPUT_PULLUP);
+  // Use a debounce interval of 5 milliseconds
+  bStart.interval(5);
 
-  bAlt.attach(BUTTON_ALT_INPUT,INPUT_PULLUP); // Attach the debouncer to BUTTON_ALT_INPUT pin with INPUT_PULLUP mode
-  bAlt.interval(5); // Use a debounce interval of 5 milliseconds
+  // Attach the debouncer to BUTTON_ALT_INPUT pin with INPUT_PULLUP mode
+  bAlt.attach(BUTTON_ALT_INPUT,INPUT_PULLUP);
+  // Use a debounce interval of 5 milliseconds
+  bAlt.interval(5);
 
   pinMode(OLED_RESET_INPUT,INPUT);
   
@@ -228,12 +251,15 @@ void detectButtonPress() {
   } else if (bStart.fell()) {
     playing = !playing;
     if (playing) {
-      syncPulse = millis(); // time to keep track of Control In pulse, and Master Clock latency compensation
+      // time to keep track of Control In pulse, and Master Clock latency compensation
+      syncPulse = millis();
       digitalWrite(CONTROL_OUTPUT, HIGH);
     } else {
       uClock.stop();
-      offsetSync = false; // variable to keep track of Master Clock latency compensation
-      syncPulse = millis(); // time to keep track of Control In pulse
+      // variable to keep track of Master Clock latency compensation
+      offsetSync = false;
+      // time to keep track of Control In pulse
+      syncPulse = millis();
       digitalWrite(CONTROL_OUTPUT, HIGH);
       
     }
@@ -314,7 +340,6 @@ void detailedTimer() {
     display.setCursor(98, 24);
     display.println(" PPQN");
   }
-  
 //  display.setTextSize(1);
 //  display.setCursor(0, 38);
 //  display.println("Clock Division:");
@@ -445,8 +470,9 @@ void editDisplay(int i, int p) {
       }
 }
 
-  
-void all_off() { // make sure LED pin, Control pin, and CV pins are set to low at Stop
+
+// make sure LED pin, Control pin, and CV pins are set to low at Stop
+void all_off() {
   digitalWrite(CV1_SYNC_OUTPUT, LOW);
   digitalWrite(CV2_SYNC_OUTPUT, LOW);
   digitalWrite(CONTROL_OUTPUT, LOW);
@@ -456,9 +482,12 @@ void all_off() { // make sure LED pin, Control pin, and CV pins are set to low a
 
 void loop(void) {
   detectButtonPress();
-  currentTime = millis(); // measures the time passed after Start/Stop button is pressed
-  if(currentTime - syncPulse >= midiOffset && playing && !offsetSync) { uClock.start(), offsetSync = true; } // checks that time (latency compensation) is reached to start Master Clock 
-  if(currentTime - syncPulse >= FSSyncTime) { digitalWrite(CONTROL_OUTPUT, LOW); } // checks that the time (FFSyncTime) for Control In pulse is reached to set CONTROL_OUTPUT to low
+  // measures the time passed after Start/Stop button is pressed
+  currentTime = millis();
+  // checks that time (latency compensation) is reached to start Master Clock 
+  if(currentTime - syncPulse >= midiOffset && playing && !offsetSync) { uClock.start(), offsetSync = true; }
+  // checks that the time (FFSyncTime) for Control In pulse is reached to set CONTROL_OUTPUT to low
+  if(currentTime - syncPulse >= FSSyncTime) { digitalWrite(CONTROL_OUTPUT, LOW); }
   
   i = rotaryReadout();
 
