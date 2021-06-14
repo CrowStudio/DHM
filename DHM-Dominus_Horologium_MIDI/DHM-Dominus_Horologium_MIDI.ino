@@ -69,7 +69,7 @@ byte i,
      p;
 
 uint8_t bpm_blink_timer = 1,
-        cv_pulse_timer = 1;
+        cv_pulse_timer = 6;
 
 long bpm,
      CV1SyncPPQN = 1,
@@ -183,20 +183,16 @@ void bpmLed(uint32_t * tick) {
 
 // CV1 sync pulse
 void CV1SyncPulse(uint32_t * tick) {
-  // start of bar CV1_SYNC_OUTPUT HIGH
-  if ( !(*tick % 96) || (*tick == 1) ) { digitalWrite(CV1_SYNC_OUTPUT, HIGH); }
-  // pulses per quarter note CV1_SYNC_OUTPUT HIGH
-  else if ( !(*tick % CV1SyncPPQN) ) { digitalWrite(CV1_SYNC_OUTPUT, HIGH); }
+  // CV1_SYNC_OUTPUT HIGH every quarter pulse
+  if ( !(*tick % CV1SyncPPQN) || (*tick == 1) ) { digitalWrite(CV1_SYNC_OUTPUT, HIGH); }
   //  CV1_SYNC_OUTPUT LOW
   else if ( !(*tick % cv_pulse_timer) ) { digitalWrite(CV1_SYNC_OUTPUT, LOW); }
 }
 
 // CV2 sync pulse
 void CV2SyncPulse(uint32_t * tick) {
-  //  start of bar CV2_SYNC_OUTPUT HIGH
-  if ( !(*tick % 96) || (*tick == 1) ) { digitalWrite(CV2_SYNC_OUTPUT, HIGH); }
-  // pulses per quarter note CV2_SYNC_OUTPUT HIGH
-  else if ( !(*tick % CV2SyncPPQN) ) { digitalWrite(CV2_SYNC_OUTPUT, HIGH); }
+  //  CV2_SYNC_OUTPUT HIGH every quarter pulse
+  if ( !(*tick % CV2SyncPPQN) || (*tick == 1) ) { digitalWrite(CV2_SYNC_OUTPUT, HIGH); }
   //  CV2_SYNC_OUTPUT LOW
   else if ( !(*tick % cv_pulse_timer) ) { digitalWrite(CV2_SYNC_OUTPUT, LOW); }
 }
