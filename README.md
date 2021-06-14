@@ -18,7 +18,7 @@ CV
 OLED display.<br/>
 <img src="https://github.com/CrowStudio/DHM/blob/main/media/Main_screen.jpg" alt="closeup on display" width="450">
 
-Rotary Enconder
+Rotary Encoder
  - Adjust BPM 20-300 with +/- 1 increments.<br/>
 
 Rotary Encoder Push Button (Menu mode)
@@ -39,7 +39,7 @@ HARDWARE
 
 FIRMWARE
 - Add speed-up for Rotary Encoder.
-  - Replace with +/- 1 per step at slow speed and icrease when truning faster.
+  - Replace with +/- 1 per step at slow speed and increase when turning faster.
 - Create Menu structure for Rotary Encoder Push Button.<br/>
   Select option with Rotary Encoder, edit with Alt(Select) Button, change value with Rotary Encoder, and press Alt(Select) Button to save/exit
   - Add individual PPQN Resolution for CV(1) Sync.
